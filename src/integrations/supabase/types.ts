@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      listings: {
+        Row: {
+          address: string | null
+          area_m2: number | null
+          created_at: string
+          description: string | null
+          garage: string | null
+          id: string
+          notes: string | null
+          offer_type: string | null
+          photo_urls: Json | null
+          price: number | null
+          property_url: string
+          quality: string | null
+          rooms: number | null
+          score_json: Json | null
+          status: string | null
+          type: string | null
+          updated_at: string
+          user_id: string
+          year_built: string | null
+        }
+        Insert: {
+          address?: string | null
+          area_m2?: number | null
+          created_at?: string
+          description?: string | null
+          garage?: string | null
+          id?: string
+          notes?: string | null
+          offer_type?: string | null
+          photo_urls?: Json | null
+          price?: number | null
+          property_url: string
+          quality?: string | null
+          rooms?: number | null
+          score_json?: Json | null
+          status?: string | null
+          type?: string | null
+          updated_at?: string
+          user_id?: string
+          year_built?: string | null
+        }
+        Update: {
+          address?: string | null
+          area_m2?: number | null
+          created_at?: string
+          description?: string | null
+          garage?: string | null
+          id?: string
+          notes?: string | null
+          offer_type?: string | null
+          photo_urls?: Json | null
+          price?: number | null
+          property_url?: string
+          quality?: string | null
+          rooms?: number | null
+          score_json?: Json | null
+          status?: string | null
+          type?: string | null
+          updated_at?: string
+          user_id?: string
+          year_built?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
