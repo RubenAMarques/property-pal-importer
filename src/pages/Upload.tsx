@@ -14,12 +14,13 @@ interface CSVRow {
   address: string;
   price: string;
   year_built: string;
-  area_m2: string;
-  rooms: string;
+  area: string;
+  bedrooms: string;
   garage: string;
   type: string;
-  offer_type: string;
-  [key: string]: string; // for photo_* columns
+  listing_type: string;
+  primary_image: string;
+  images: string;
 }
 
 export default function Upload() {
@@ -48,11 +49,22 @@ export default function Upload() {
           const validRows = rows.filter(row => row.property_url?.trim());
 
           const listingsToInsert = validRows.map((row) => {
-            // Collect all photo URLs from photo_* columns
-            const photoUrls = Object.keys(row)
-              .filter(key => key.startsWith('photo_'))
-              .map(key => row[key])
-              .filter(url => url?.trim());
+            // Build photo URLs array from primary_image and images
+            const photoUrls: string[] = [];
+            
+            // Add primary_image if it exists
+            if (row.primary_image?.trim()) {
+              photoUrls.push(row.primary_image.trim());
+            }
+            
+            // Split images on comma or semicolon and append
+            if (row.images?.trim()) {
+              const additionalImages = row.images
+                .split(/[,;]/)
+                .map(url => url.trim())
+                .filter(url => url);
+              photoUrls.push(...additionalImages);
+            }
 
             return {
               property_url: row.property_url,
@@ -60,11 +72,11 @@ export default function Upload() {
               address: row.address || null,
               price: row.price ? parseFloat(row.price.replace(/[^\d.-]/g, '')) : null,
               year_built: row.year_built || null,
-              area_m2: row.area_m2 ? parseFloat(row.area_m2) : null,
-              rooms: row.rooms ? parseInt(row.rooms) : null,
+              area_m2: row.area ? parseFloat(row.area) : null,
+              rooms: row.bedrooms ? parseInt(row.bedrooms) : null,
               garage: row.garage || null,
               type: row.type || null,
-              offer_type: row.offer_type || null,
+              offer_type: row.listing_type || null,
               photo_urls: photoUrls.length > 0 ? photoUrls : null,
               status: 'pending',
             };
