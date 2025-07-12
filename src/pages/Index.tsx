@@ -1,13 +1,35 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, BarChart3, FileText } from "lucide-react";
+import { Upload, BarChart3, FileText, LogIn, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, signOut, loading } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Auth Header */}
+      <div className="flex justify-end p-4">
+        {user ? (
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">
+              {user.email}
+            </span>
+            <Button onClick={() => signOut()} variant="outline" size="sm">
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+          </div>
+        ) : (
+          <Button onClick={() => navigate('/auth')} variant="outline">
+            <LogIn className="mr-2 h-4 w-4" />
+            Sign In
+          </Button>
+        )}
+      </div>
+
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-primary/5 to-primary-glow/5 border-b">
         <div className="max-w-7xl mx-auto px-8 py-20">
@@ -21,7 +43,7 @@ const Index = () => {
             </p>
             <div className="flex gap-4 justify-center">
               <Button 
-                onClick={() => navigate('/upload')} 
+                onClick={() => user ? navigate('/upload') : navigate('/auth')} 
                 size="lg"
                 className="bg-gradient-to-r from-primary to-primary-glow shadow-lg hover:shadow-xl transition-all"
               >
@@ -29,7 +51,7 @@ const Index = () => {
                 Import Listings
               </Button>
               <Button 
-                onClick={() => navigate('/dashboard')} 
+                onClick={() => user ? navigate('/dashboard') : navigate('/auth')} 
                 variant="outline" 
                 size="lg"
               >

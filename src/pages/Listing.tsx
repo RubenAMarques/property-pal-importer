@@ -8,6 +8,7 @@ import { QualityBadge } from "@/components/QualityBadge";
 import { JsonViewer } from "@/components/JsonViewer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, Loader2, ExternalLink, Save } from "lucide-react";
 
 interface ListingData {
@@ -35,10 +36,18 @@ export default function Listing() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
   const [listing, setListing] = useState<ListingData | null>(null);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
 
   useEffect(() => {
     if (id) {
@@ -155,12 +164,16 @@ export default function Listing() {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
+  }
+
+  if (!user) {
+    return null; // Will redirect to auth
   }
 
   if (!listing) {
