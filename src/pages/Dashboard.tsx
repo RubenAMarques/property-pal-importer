@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { StatusBadge } from "@/components/StatusBadge";
 import { QualityBadge } from "@/components/QualityBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2, Plus, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Listing {
@@ -185,21 +186,45 @@ export default function Dashboard() {
                   {listings.map((listing) => (
                     <TableRow 
                       key={listing.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => navigate(`/listing/${listing.id}`)}
+                      className="hover:bg-muted/50"
                     >
-                      <TableCell className="font-medium">
-                        <div className="max-w-xs truncate">
-                          {listing.property_url}
-                        </div>
+                      <TableCell className="font-medium w-[260px]">
+                        <TooltipProvider delayDuration={150}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <a
+                                href={listing.property_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 truncate text-blue-600 hover:underline"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {listing.property_url}
+                                <ExternalLink size={14} className="shrink-0" />
+                              </a>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-[420px] break-all">
+                              {listing.property_url}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </TableCell>
-                      <TableCell>
+                      <TableCell 
+                        className="cursor-pointer"
+                        onClick={() => navigate(`/listing/${listing.id}`)}
+                      >
                         <StatusBadge status={listing.status === 'done' ? 'ok' : listing.status} />
                       </TableCell>
-                      <TableCell>
+                      <TableCell 
+                        className="cursor-pointer"
+                        onClick={() => navigate(`/listing/${listing.id}`)}
+                      >
                         <QualityBadge quality={listing.quality} />
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell 
+                        className="text-muted-foreground cursor-pointer"
+                        onClick={() => navigate(`/listing/${listing.id}`)}
+                      >
                         {new Date(listing.created_at).toLocaleDateString()}
                       </TableCell>
                     </TableRow>
