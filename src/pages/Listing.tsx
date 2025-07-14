@@ -9,7 +9,7 @@ import { QualityChecklist } from "@/components/QualityChecklist";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Loader2, ExternalLink, Save, RefreshCw } from "lucide-react";
+import { ArrowLeft, Loader2, ExternalLink, Save, RefreshCw, X } from "lucide-react";
 
 interface ListingData {
   id: string;
@@ -41,6 +41,7 @@ export default function Listing() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -319,6 +320,25 @@ export default function Listing() {
                 </p>
               </div>
 
+              {/* Photos Section */}
+              {Array.isArray(listing.photo_urls) && listing.photo_urls.length > 0 && (
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Photos</label>
+                  <div className="mt-4 grid grid-cols-5 gap-2">
+                    {listing.photo_urls.slice(0, 5).map((url: string, index: number) => (
+                      <img
+                        key={url + index}
+                        src={url}
+                        className="h-20 w-20 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
+                        loading="lazy"
+                        onClick={() => setLightboxUrl(url)}
+                        alt={`Property photo ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 {listing.price && (
                   <div>
@@ -446,6 +466,29 @@ export default function Listing() {
           </div>
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {lightboxUrl && (
+        <div 
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <div className="relative max-w-[90vw] max-h-[90vh]">
+            <button
+              onClick={() => setLightboxUrl(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <X className="h-8 w-8" />
+            </button>
+            <img
+              src={lightboxUrl}
+              className="max-h-[80vh] w-auto rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+              alt="Property photo"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
