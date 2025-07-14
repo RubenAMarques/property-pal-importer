@@ -4,8 +4,10 @@ interface StatusBadgeProps {
   status: string;
 }
 
-export function StatusBadge({ status }: StatusBadgeProps) {
+export function StatusBadge({ status, variant }: StatusBadgeProps & { variant?: "secondary" | "default" }) {
   const getVariant = (status: string) => {
+    if (variant === "secondary") return "secondary" as const;
+    
     switch (status) {
       case "pending":
         return "pending" as const;

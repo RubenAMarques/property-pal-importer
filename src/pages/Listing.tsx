@@ -225,6 +225,19 @@ export default function Listing() {
     );
   }
 
+  const cleanDescription = listing.description
+    ? listing.description.startsWith('{')
+      ? (() => {
+          try {
+            const parse = JSON.parse(listing.description);
+            return parse.text ?? parse.name ?? parse.description ?? '(no text)';
+          } catch {
+            return listing.description;
+          }
+        })()
+      : listing.description
+    : 'No description available';
+
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-4xl mx-auto">
@@ -249,7 +262,7 @@ export default function Listing() {
               <CardTitle className="flex items-center gap-4">
                 Property Information
                 <div className="flex gap-2">
-                  <StatusBadge status={listing.status} />
+                  <StatusBadge status={listing.status} variant="secondary" />
                   <QualityBadge quality={listing.quality} />
                 </div>
               </CardTitle>
@@ -277,24 +290,12 @@ export default function Listing() {
                 </div>
               )}
 
-              {listing.description && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Description</label>
-                  <p className="text-sm mt-1">
-                    {(() => {
-                      try {
-                        if (listing.description?.startsWith('{')) {
-                          const parsed = JSON.parse(listing.description);
-                          return parsed.text || parsed.name || listing.description;
-                        }
-                        return listing.description;
-                      } catch {
-                        return listing.description;
-                      }
-                    })()}
-                  </p>
-                </div>
-              )}
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Description</label>
+                <p className="text-sm mt-1">
+                  {cleanDescription}
+                </p>
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 {listing.price && (
