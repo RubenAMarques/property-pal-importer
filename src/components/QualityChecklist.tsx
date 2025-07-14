@@ -1,4 +1,5 @@
 import { Check, X } from "lucide-react";
+import { parseQuality } from "@/utils/getQuality";
 
 interface QualityChecklistProps {
   scoreJson: any;
@@ -9,16 +10,18 @@ export function QualityChecklist({ scoreJson }: QualityChecklistProps) {
     return <div className="text-muted-foreground text-sm">No quality data available</div>;
   }
 
+  const parsedQuality = parseQuality(scoreJson);
+  
   const checks = [
-    { key: 'photos_divisions', label: 'Photos Divisions' },
-    { key: 'duplicates', label: 'No Duplicates' },
-    { key: 'photo_quality', label: 'Photo Quality' },
-    { key: 'location_ok', label: 'Location OK' },
-    { key: 'description_ok', label: 'Description OK' },
-    { key: 'base_info_ok', label: 'Base Info OK' }
+    { key: 'photosDivisionsOk', label: 'Photos Divisions', value: parsedQuality.photosDivisionsOk },
+    { key: 'noDuplicatesOk', label: 'No Duplicates', value: parsedQuality.noDuplicatesOk },
+    { key: 'photo_quality', label: 'Photo Quality', value: parsedQuality.photo_quality },
+    { key: 'location_ok', label: 'Location OK', value: parsedQuality.location_ok },
+    { key: 'description_ok', label: 'Description OK', value: parsedQuality.description_ok },
+    { key: 'base_info_ok', label: 'Base Info OK', value: parsedQuality.base_info_ok }
   ];
 
-  const passedChecks = checks.filter(check => scoreJson[check.key] === true).length;
+  const passedChecks = checks.filter(check => check.value === true).length;
   const totalChecks = checks.length;
 
   return (
@@ -28,7 +31,7 @@ export function QualityChecklist({ scoreJson }: QualityChecklistProps) {
       </div>
       <ul className="space-y-2">
         {checks.map((check) => {
-          const passed = scoreJson[check.key] === true;
+          const passed = check.value;
           return (
             <li key={check.key} className="flex items-center gap-3">
               {passed ? (

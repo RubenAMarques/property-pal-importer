@@ -156,7 +156,12 @@ export default function Dashboard() {
         {/* Listings Table */}
         <Card>
           <CardHeader>
-            <CardTitle>All Listings</CardTitle>
+            <div className="flex justify-between items-center">
+              <CardTitle>All Listings</CardTitle>
+              <div className="text-xs text-muted-foreground">
+                Listings are re-analysed automatically every 10 minutes.
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {listings.length === 0 ? (
@@ -171,7 +176,7 @@ export default function Dashboard() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Property URL</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Checking status</TableHead>
                     <TableHead>Quality</TableHead>
                     <TableHead>Created</TableHead>
                   </TableRow>
