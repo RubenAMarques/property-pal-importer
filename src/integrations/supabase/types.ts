@@ -20,6 +20,8 @@ export type Database = {
           area_m2: number | null
           created_at: string
           description: string | null
+          dup_hash: string | null
+          duplicate_of_url: string | null
           garage: string | null
           id: string
           notes: string | null
@@ -41,6 +43,8 @@ export type Database = {
           area_m2?: number | null
           created_at?: string
           description?: string | null
+          dup_hash?: string | null
+          duplicate_of_url?: string | null
           garage?: string | null
           id?: string
           notes?: string | null
@@ -62,6 +66,8 @@ export type Database = {
           area_m2?: number | null
           created_at?: string
           description?: string | null
+          dup_hash?: string | null
+          duplicate_of_url?: string | null
           garage?: string | null
           id?: string
           notes?: string | null
