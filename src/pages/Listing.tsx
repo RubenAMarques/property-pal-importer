@@ -225,20 +225,40 @@ export default function Listing() {
     );
   }
 
-  const cleanDescription =
-    (() => {
-      const desc = listing.description?.trim() ?? '';
-      if (!desc) return '(no text)';
-      if (desc.startsWith('{')) {
-        try {
-          const obj = JSON.parse(desc);
-          return obj.text ?? obj.name ?? obj.description ?? '(no text)';
-        } catch {
-          return '(no text)';
-        }
+  const cleanDescription = (() => {
+    const desc = (listing.description ?? '').trim();
+    if (!desc) return '(no text)';
+
+    // Se começar por "{", tentamos ler JSON
+    if (desc.startsWith('{')) {
+      try {
+        const obj = JSON.parse(desc);
+
+        // 1) preferimos campos de texto longos, se existirem
+        if (obj.text)         return obj.text.trim();
+        if (obj.name)         return obj.name.trim();
+        if (obj.description)  return obj.description.trim();
+
+        // 2) caso contrário, gera‑se um resumo "chave: valor"
+        const summary = Object.entries(obj)
+          .filter(([k, v]) =>
+            v !== null &&
+            v !== '' &&
+            k !== '__typename' &&
+            typeof v === 'string'
+          )
+          .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`)
+          .join(', ');
+
+        return summary || '(no text)';
+      } catch {
+        // JSON mal‑formado – voltamos a mostrar o texto cru
       }
-      return desc;          // plain string description
-    })();
+    }
+
+    // Descrição normal
+    return desc;
+  })();
 
   return (
     <div className="min-h-screen bg-background p-8">
