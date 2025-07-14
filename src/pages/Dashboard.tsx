@@ -69,9 +69,14 @@ export default function Dashboard() {
       // Calculate status counts
       const counts = (data || []).reduce(
         (acc, listing) => {
-          const status = listing.status === 'done' ? 'ok' : listing.status;
-          if (status === 'ok' || status === 'pending' || status === 'review') {
-            acc[status as keyof StatusCounts]++;
+          if (listing.status === 'pending') {
+            acc.pending++;
+          }
+          if (listing.quality === 'ok') {
+            acc.ok++;
+          }
+          if (listing.quality === 'review') {
+            acc.review++;
           }
           return acc;
         },
