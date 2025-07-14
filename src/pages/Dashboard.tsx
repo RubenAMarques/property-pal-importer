@@ -189,25 +189,30 @@ export default function Dashboard() {
                       className="hover:bg-muted/50"
                     >
                       <TableCell className="font-medium w-[260px]">
-                        <TooltipProvider delayDuration={150}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <a
-                                href={listing.property_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1 truncate text-blue-600 hover:underline"
-                                onClick={(e) => e.stopPropagation()}
-                              >
+                        <div className="flex items-center gap-1">
+                          <TooltipProvider delayDuration={150}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="truncate text-gray-700">
+                                  {listing.property_url}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-[420px] break-all">
                                 {listing.property_url}
-                                <ExternalLink size={14} className="shrink-0" />
-                              </a>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-[420px] break-all">
-                              {listing.property_url}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          
+                          <a
+                            href={listing.property_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ExternalLink size={14} className="shrink-0" />
+                          </a>
+                        </div>
                       </TableCell>
                       <TableCell 
                         className="cursor-pointer"
