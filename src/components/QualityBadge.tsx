@@ -1,10 +1,13 @@
 import { Badge } from "@/components/ui/badge";
+import { normalizeQuality } from "@/utils/normalizeQuality";
 
 interface QualityBadgeProps {
   quality: string;
 }
 
 export function QualityBadge({ quality }: QualityBadgeProps) {
+  const normalizedQuality = normalizeQuality(quality);
+  
   const getVariant = (quality: string) => {
     switch (quality) {
       case "ok":
@@ -30,8 +33,8 @@ export function QualityBadge({ quality }: QualityBadgeProps) {
   };
 
   return (
-    <Badge variant={getVariant(quality)}>
-      {getDisplayText(quality)}
+    <Badge variant={getVariant(normalizedQuality)}>
+      {getDisplayText(normalizedQuality)}
     </Badge>
   );
 }

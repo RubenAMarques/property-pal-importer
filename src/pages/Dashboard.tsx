@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2, Plus, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { normalizeQuality } from "@/utils/normalizeQuality";
 
 interface Listing {
   id: string;
@@ -65,10 +66,17 @@ export default function Dashboard() {
         return;
       }
 
-      setListings(data || []);
+      // Normalize quality and status for all listings
+      const processedListings = (data || []).map(listing => ({
+        ...listing,
+        quality: normalizeQuality(listing.quality),
+        status: (listing.status ?? "").trim().toLowerCase()
+      }));
 
-      // Calculate status counts
-      const counts = (data || []).reduce(
+      setListings(processedListings);
+
+      // Calculate status counts using normalized values
+      const counts = processedListings.reduce(
         (acc, listing) => {
           if (listing.status === 'pending') {
             acc.pending++;
