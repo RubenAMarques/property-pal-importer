@@ -186,14 +186,16 @@ export default function Dashboard() {
                   {listings.map((listing) => (
                     <TableRow 
                       key={listing.id}
-                      className="hover:bg-muted/50"
+                      className="hover:bg-muted/50 cursor-pointer"
+                      onClick={() => navigate(`/listing/${listing.id}`)}
+                      tabIndex={0}
                     >
                       <TableCell className="font-medium w-[260px]">
                         <div className="flex items-center gap-1">
                           <TooltipProvider delayDuration={150}>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <span className="truncate text-gray-700">
+                                <span className="truncate max-w-[420px] text-gray-700 cursor-pointer">
                                   {listing.property_url}
                                 </span>
                               </TooltipTrigger>
@@ -214,22 +216,13 @@ export default function Dashboard() {
                           </a>
                         </div>
                       </TableCell>
-                      <TableCell 
-                        className="cursor-pointer"
-                        onClick={() => navigate(`/listing/${listing.id}`)}
-                      >
+                      <TableCell className="cursor-pointer">
                         <StatusBadge status={listing.status === 'done' ? 'ok' : listing.status} />
                       </TableCell>
-                      <TableCell 
-                        className="cursor-pointer"
-                        onClick={() => navigate(`/listing/${listing.id}`)}
-                      >
+                      <TableCell className="cursor-pointer">
                         <QualityBadge quality={listing.quality} />
                       </TableCell>
-                      <TableCell 
-                        className="text-muted-foreground cursor-pointer"
-                        onClick={() => navigate(`/listing/${listing.id}`)}
-                      >
+                      <TableCell className="text-muted-foreground cursor-pointer">
                         {new Date(listing.created_at).toLocaleDateString()}
                       </TableCell>
                     </TableRow>
