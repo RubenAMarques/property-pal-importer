@@ -225,18 +225,20 @@ export default function Listing() {
     );
   }
 
-  const cleanDescription = listing.description
-    ? listing.description.startsWith('{')
-      ? (() => {
-          try {
-            const parse = JSON.parse(listing.description);
-            return parse.text ?? parse.name ?? parse.description ?? '(no text)';
-          } catch {
-            return listing.description;
-          }
-        })()
-      : listing.description
-    : 'No description available';
+  const cleanDescription =
+    (() => {
+      const desc = listing.description?.trim() ?? '';
+      if (!desc) return '(no text)';
+      if (desc.startsWith('{')) {
+        try {
+          const obj = JSON.parse(desc);
+          return obj.text ?? obj.name ?? obj.description ?? '(no text)';
+        } catch {
+          return '(no text)';
+        }
+      }
+      return desc;          // plain string description
+    })();
 
   return (
     <div className="min-h-screen bg-background p-8">
