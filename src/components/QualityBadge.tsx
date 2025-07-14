@@ -18,9 +18,20 @@ export function QualityBadge({ quality }: QualityBadgeProps) {
     }
   };
 
+  const getDisplayText = (quality: string) => {
+    switch (quality) {
+      case "ok":
+        return "OK";
+      case "review":
+        return "Review";
+      default:
+        return quality;
+    }
+  };
+
   return (
-    <Badge variant={getVariant(quality)} className="capitalize">
-      {quality}
+    <Badge variant={getVariant(quality)}>
+      {getDisplayText(quality)}
     </Badge>
   );
 }

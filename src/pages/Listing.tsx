@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/StatusBadge";
 import { QualityBadge } from "@/components/QualityBadge";
-import { JsonViewer } from "@/components/JsonViewer";
+import { QualityChecklist } from "@/components/QualityChecklist";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Loader2, ExternalLink, Save } from "lucide-react";
+import { ArrowLeft, Loader2, ExternalLink, Save, RefreshCw } from "lucide-react";
 
 interface ListingData {
   id: string;
@@ -164,6 +164,42 @@ export default function Listing() {
     }
   };
 
+  const handleReAnalyse = async () => {
+    if (!listing) return;
+
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('listings')
+        .update({ status: 'pending' })
+        .eq('id', listing.id);
+
+      if (error) {
+        console.error('Error updating listing:', error);
+        toast({
+          title: "Error",
+          description: "Failed to re-analyse listing.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Listing queued for re-analysis.",
+        });
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -213,7 +249,7 @@ export default function Listing() {
               <CardTitle className="flex items-center gap-4">
                 Property Information
                 <div className="flex gap-2">
-                  <StatusBadge status={listing.status === 'done' ? 'ok' : listing.status} />
+                  <StatusBadge status={listing.status} />
                   <QualityBadge quality={listing.quality} />
                 </div>
               </CardTitle>
@@ -244,7 +280,19 @@ export default function Listing() {
               {listing.description && (
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Description</label>
-                  <p className="text-sm mt-1">{listing.description}</p>
+                  <p className="text-sm mt-1">
+                    {(() => {
+                      try {
+                        if (listing.description?.startsWith('{')) {
+                          const parsed = JSON.parse(listing.description);
+                          return parsed.text || parsed.name || listing.description;
+                        }
+                        return listing.description;
+                      } catch {
+                        return listing.description;
+                      }
+                    })()}
+                  </p>
                 </div>
               )}
 
@@ -303,13 +351,13 @@ export default function Listing() {
 
           {/* Actions and Notes */}
           <div className="space-y-6">
-            {/* Score JSON */}
+            {/* Quality Checklist */}
             <Card>
               <CardHeader>
-                <CardTitle>Score Data</CardTitle>
+                <CardTitle>Quality Checklist</CardTitle>
               </CardHeader>
               <CardContent>
-                <JsonViewer data={listing.score_json} />
+                <QualityChecklist scoreJson={listing.score_json} />
               </CardContent>
             </Card>
 
@@ -346,7 +394,7 @@ export default function Listing() {
               <CardHeader>
                 <CardTitle>Actions</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-3">
                 <Button 
                   onClick={handleMarkAsOK} 
                   disabled={saving}
@@ -356,6 +404,19 @@ export default function Listing() {
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   ) : null}
                   Mark as OK
+                </Button>
+                <Button 
+                  onClick={handleReAnalyse} 
+                  disabled={saving}
+                  variant="secondary"
+                  className="w-full"
+                >
+                  {saving ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                  )}
+                  Re-analyse
                 </Button>
               </CardContent>
             </Card>
